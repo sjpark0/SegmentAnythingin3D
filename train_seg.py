@@ -149,12 +149,13 @@ def training(dataset, opt, pipe, iteration, saving_iterations, checkpoint_iterat
         predictor.input_size = (1024, 1024)
         predictor.features = sam_features
         predictor.is_image_set = True
-
         if len(gt_list) < len(cams) // optimization_times:
             if iteration == 0:
                 # [X, Y]
 
-                input_point = np.array([[300, 370]])
+                #input_point = np.array([[300, 370]])
+                #input_point = np.array([[2711, 1038]])
+                input_point = np.array([[723, 492]])
 
                 os.makedirs('tmpvis_files', exist_ok=True)
                 os.makedirs(f"tmpvis_files/{dataset.source_path.split('/')[-1]}", exist_ok=True)
@@ -213,6 +214,13 @@ def training(dataset, opt, pipe, iteration, saving_iterations, checkpoint_iterat
                             multimask_output=False,
                         )
                     selected_mask = 0
+
+
+                    #mask = masks[0]
+                    #tmp_mask = mask.astype(np.uint8) * 255
+                    #cv2.imwrite(os.path.join(tmp_vis_path, f"tmp_mask_{iteration}.jpg"), tmp_mask)
+                    
+                    
                 else:
                     progress_bar.set_postfix({"IoU": f"{0:.{2}f}", "IoA": f"{0:.{2}f}"})
                     progress_bar.update(1)
@@ -225,10 +233,17 @@ def training(dataset, opt, pipe, iteration, saving_iterations, checkpoint_iterat
         else:
             gt_mask = gt_list[iteration % (len(cams) // optimization_times)]
 
-
+        
         tmp_rendered_mask = rendered_mask.detach().clone()
         tmp_rendered_mask[tmp_rendered_mask <= 0.5] = 0
         tmp_rendered_mask[tmp_rendered_mask != 0] = 1
+
+        tmp_mask = gt_mask.cpu().numpy().astype(np.uint8) * 255        
+        print(tmp_mask.shape)        
+        cv2.imwrite(os.path.join(tmp_vis_path, f"gt_mask_{iteration}.jpg"), tmp_mask[0,...])
+
+        tmp_renderer_mask = tmp_rendered_mask.cpu().numpy() * 255
+        cv2.imwrite(os.path.join(tmp_vis_path, f"rendered_mask_{iteration}.jpg"), tmp_renderer_mask[0,...])
 
         IoU = (gt_mask * tmp_rendered_mask).sum() / ((gt_mask + tmp_rendered_mask).sum() - (gt_mask * tmp_rendered_mask).sum())
         IoA = (gt_mask * tmp_rendered_mask).sum() / gt_mask.sum()
@@ -313,5 +328,6 @@ if __name__ == "__main__":
     torch.autograd.set_detect_anomaly(args.detect_anomaly)
     training(lp.extract(args), op.extract(args), pp.extract(args), args.iteration, args.save_iterations, args.checkpoint_iterations, args.debug_from)
 
+    prepare_output_and_logger(args)
     # All done
     print("\nTraining complete.")

@@ -80,7 +80,8 @@ def render_sets(dataset : ModelParams, iteration : int, pipeline : PipelineParam
         if target == 'feature' or target == 'coarse_seg_everything' or target == 'contrastive_feature':
             feature_gaussians = FeatureGaussianModel(dataset.feature_dim)
 
-        scene = Scene(dataset, gaussians, feature_gaussians, load_iteration=iteration, shuffle=False, mode='eval', target=target if target != 'xyz' else 'scene')
+        #scene = Scene(dataset, gaussians, feature_gaussians, load_iteration=iteration, shuffle=False, mode='eval', target=target if target != 'xyz' else 'scene')
+        scene = Scene(dataset, gaussians, load_iteration=iteration, shuffle=False, mode='eval', target=target if target != 'xyz' else 'scene')
         scene.save(scene.loaded_iter, target='scene', colored=True)
         if segment:
             if target == 'coarse_seg_everything':

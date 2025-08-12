@@ -15,6 +15,8 @@ import json
 from utils.system_utils import searchForMaxIteration
 from scene.dataset_readers import sceneLoadTypeCallbacks, fetchPly
 from scene.gaussian_model import GaussianModel
+from scene.gaussian_model_ff import FeatureGaussianModel
+
 from arguments import ModelParams
 from utils.camera_utils import cameraList_from_camInfos, camera_to_JSON
 
