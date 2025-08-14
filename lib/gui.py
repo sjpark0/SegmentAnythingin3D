@@ -343,7 +343,7 @@ class Sam3dGUI:
                 return html.Div("Train Stage Finished! Press Ctrl+C to Exit!"), fig_masked_rgb, fig_seged_rgb
             
         
-        app.run_server(debug=self.debug)
+        app.run(debug=self.debug, host='0.0.0.0')
 
 if __name__ == '__main__':
     from segment_anything import (SamAutomaticMaskGenerator, SamPredictor,

@@ -3,3 +3,7 @@
 /data/
 /logs/
 /dependencies/
+/output/
+/tmpvis_files/
+/submodules/
+/third_party/

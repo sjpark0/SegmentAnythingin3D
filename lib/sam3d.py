@@ -118,6 +118,8 @@ class Sam3D(ABC):
         with torch.no_grad():
             rgb, _, _, _, _ = self.render_view(idx=0)
             init_image = utils.to8b(rgb.cpu().numpy())
+            #init_image =  utils.to8b(self.data_dict['images'][self.data_dict['i_train'][0],:,:,:].numpy())         
+            
             self.predictor.set_image(init_image)
         
         return init_image
@@ -187,7 +189,8 @@ class Sam3D(ABC):
 
         rgb, depth, bgmap, seg_m, dual_seg_m = self.render_view(idx, [render_poses, HW, Ks])
         if sam_mask is None:
-            self.predictor.set_image(utils.to8b(rgb.cpu().numpy()))
+            #self.predictor.set_image(utils.to8b(rgb.cpu().numpy()))
+            self.predictor.set_image(utils.to8b(self.data_dict['images'][self.data_dict['i_train'][idx],:,:,:].numpy()))
             sam_seg_show = self.prompt_and_inverse(idx, HW, seg_m, dual_seg_m, depth)
         else:
             self.inverse(seg_m, sam_mask)
