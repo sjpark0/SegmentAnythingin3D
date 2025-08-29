@@ -10,6 +10,7 @@
 #
 
 import os
+import sys
 import torch
 from gaussian_renderer import render
 from scene import Scene, GaussianModel
@@ -17,7 +18,7 @@ from utils.general_utils import safe_state
 import uuid
 from tqdm import tqdm
 from argparse import ArgumentParser, Namespace
-from arguments import ModelParams, PipelineParams, OptimizationParams, get_combined_args
+from arguments import ModelParams, PipelineParams, OptimizationParams, ModelHiddenParams, get_combined_args
 
 import torchvision
 import numpy as np
@@ -104,7 +105,7 @@ def training(dataset, opt, pipe, iteration, saving_iterations, checkpoint_iterat
 
     gaussians = GaussianModel(dataset.sh_degree)
 
-    scene = Scene(dataset, gaussians, load_iteration=iteration, shuffle=False, init_from_3dgs_pcd=dataset.init_from_3dgs_pcd, target='seg', mode='train')
+    scene = Scene(dataset, gaussians, load_iteration=iteration, shuffle=False, target='seg', mode='train')
 
     gaussians.training_setup(opt)
 
@@ -303,6 +304,7 @@ if __name__ == "__main__":
     lp = ModelParams(parser, sentinel=True)
     op = OptimizationParams(parser)
     pp = PipelineParams(parser)
+    hp = ModelHiddenParams(parser)
     parser.add_argument('--ip', type=str, default="127.0.0.1")
     parser.add_argument('--port', type=int, default=6010)
     parser.add_argument('--debug_from', type=int, default=-1)
@@ -316,9 +318,11 @@ if __name__ == "__main__":
     parser.add_argument("--iteration", default=-1, type=int)
     parser.add_argument("--num_prompts", default=3, type=int)
 
+    parser.add_argument("--expname", type=str, default = "")
+    parser.add_argument("--configs", type=str, default = "")
+    
     args = get_combined_args(parser, target_cfg_file = 'cfg_args')
     args.save_iterations.append(args.iterations)
-    
     print("Optimizing " + args.model_path)
 
     # Initialize system state (RNG)

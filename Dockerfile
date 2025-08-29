@@ -32,7 +32,7 @@ RUN pip install submodules/diff-gaussian-rasterization
 RUN pip install submodules/diff-gaussian-rasterization-depth
 RUN pip install submodules/simple-knn
 
-RUN pip install opencv-python plyfile matplotlib
+RUN pip install opencv-python plyfile matplotlib scikit-image open3d mmcv==1.6.0
 RUN pip install numpy==1.26.4
 
 
