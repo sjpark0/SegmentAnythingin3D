@@ -52,9 +52,12 @@ def render_set(model_path, name, iteration, views, gaussians, pipeline, backgrou
         torchvision.utils.save_image(gt, os.path.join(gts_path, '{0:05d}'.format(idx) + ".png"))
         torchvision.utils.save_image((res["depth"] - res["depth"].min()) / (res["depth"].max() - res["depth"].min()), os.path.join(render_path, '{0:05d}_depth'.format(idx) + ".png"))
         if target == 'seg':
-            mask = res["mask"]
-            mask[mask <= MASK_THRESHOLD] = 0.
-            mask[mask > MASK_THRESHOLD] = 1.
+            mask = res["mask"].detach().clone()
+            #mask[mask <= MASK_THRESHOLD] = 0.
+            #mask[mask > MASK_THRESHOLD] = 1.
+            mask[mask <= 0.5] = 0.
+            mask[mask != 0] = 1.
+            
             mask = mask[0, :, :]
             # torchvision.utils.save_image(mask, os.path.join(mask_path, '{0:05d}'.format(idx) + ".png"))
             torchvision.utils.save_image(mask, os.path.join(mask_path, f"{view.image_name}.png"))
