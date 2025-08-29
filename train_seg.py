@@ -197,6 +197,8 @@ def training(dataset, opt, pipe, iteration, saving_iterations, checkpoint_iterat
                     plt.savefig(os.path.join(tmp_vis_path, f"tmp_mask_{j}.jpg"))
 
                 selected_mask = int(input(f"Please select a mask (check {tmp_vis_path} for masks):"))
+                tmp_renderer_mask = torch.from_numpy(masks[selected_mask:selected_mask+1]).float().cuda()
+
                 progress_bar = tqdm(range(len(cams)), desc="Segmenting progress")
             else:
 
