@@ -49,15 +49,22 @@ def render_set(model_path, name, iteration, views, gaussians, pipeline, backgrou
         # print(rendering.shape, mask.shape, gt.shape, "rendering.shape, mask.shape, gt.shape")
 
         # print("mask render time", time.time() - start_time)
-        torchvision.utils.save_image(gt, os.path.join(gts_path, '{0:05d}'.format(idx) + ".png"))
+        torchvision.utils.save_image(gt, os.path.join(gts_path, '{0:05d}'.format(idx) + ".png"))        
         torchvision.utils.save_image((res["depth"] - res["depth"].min()) / (res["depth"].max() - res["depth"].min()), os.path.join(render_path, '{0:05d}_depth'.format(idx) + ".png"))
+        print(rendering.shape)
+        mask1 = torch.mean(rendering, 0)
+        mask1[mask1 > 0.5] = 1.0
+        mask1[mask1 <= 0.5] = 0.0
+        
+        
         if target == 'seg':
             mask = res["mask"]
-            mask[mask <= MASK_THRESHOLD] = 0.
-            mask[mask > MASK_THRESHOLD] = 1.
+            #mask[mask <= MASK_THRESHOLD] = 0.
+            #mask[mask > MASK_THRESHOLD] = 1.
             mask = mask[0, :, :]
             # torchvision.utils.save_image(mask, os.path.join(mask_path, '{0:05d}'.format(idx) + ".png"))
             torchvision.utils.save_image(mask, os.path.join(mask_path, f"{view.image_name}.png"))
+            torchvision.utils.save_image(mask1, os.path.join(mask_path, f"{view.image_name}_mask1.png"))
         if target == 'seg' or target == 'scene' or target == 'coarse_seg_everything':
             torchvision.utils.save_image(rendering, os.path.join(render_path, '{0:05d}'.format(idx) + ".png"))
             # torchvision.utils.save_image(gt * mask[None], os.path.join(render_path, f"{view.image_name}.png"))
